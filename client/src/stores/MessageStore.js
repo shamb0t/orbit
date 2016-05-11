@@ -37,6 +37,7 @@ const MessageStore = Reflux.createStore({
     this._resetLoadingState();
   },
   _resetLoadingState: function() {
+    console.log("RESET")
     this.loading = false;
     this.hasLoaded = true;
     this.canLoadMore = true;
@@ -55,21 +56,39 @@ const MessageStore = Reflux.createStore({
     this.socket = socket;
 
     // Handle new messages
-    this.socket.on('messages', (channel, message) => {
+    this.socket.on('data', (channel, hash) => {
+      console.log("DATA", channel, hash);
       logger.debug("--> new messages in #" + channel);
-      console.log(message);
       this.loadMessages(channel, null, null, messagesBatchSize);
     });
 
     // Handle DB loading state
-    this.socket.on('db.load', (channel) => {
-      this.hasLoaded = false;
-      UIActions.startLoading(channel, "loadhistory", "Syncing...");
+    this.socket.on('load', (channel) => {
+      console.log("LOAD", channel);
+      this.loading = true;
+      // this.hasLoaded = false;
+      UIActions.startLoading(channel, "loadhistory", "Connecting...");
     });
-    this.socket.on('readable', (channel) => {
-      this.hasLoaded = true;
+    this.socket.on('ready', (channel) => {
+      console.log("READY", channel);
+      this.loading = false;
+      // this.hasLoaded = true;
       UIActions.stopLoading(channel, "loadhistory");
-      this.loadMessages(channel, null, null, messagesBatchSize);
+      // this.loadMessages(channel, null, null, messagesBatchSize);
+    });
+    this.socket.on('sync', (channel) => {
+      console.log("SYNC", channel);
+      this.hasLoaded = false;
+      this.loading = true;
+      UIActions.startLoading(channel, "sync", "Syncing...");
+    });
+    this.socket.on('synced', (channel, items) => {
+      console.log("SYNCED", channel);
+      this.hasLoaded = true;
+      this.loading = false;
+      UIActions.stopLoading(channel, "sync");
+      if(items.length > 0)
+        this.loadMessages(channel, null, null, messagesBatchSize);
     });
   },
   onSocketDisconnected: function() {
@@ -83,6 +102,10 @@ const MessageStore = Reflux.createStore({
   onJoinedChannel: function(channel) {
     if(!this.messages[channel]) this.messages[channel] = [];
     this._resetLoadingState();
+    // TODO: load older messages
+    console.log("JOINED")
+    this.hasLoaded = true;
+    this.loadMessages(channel, null, null, messagesBatchSize);
   },
   onLeaveChannel: function(channel: string) {
     this._resetLoadingState();
@@ -91,9 +114,15 @@ const MessageStore = Reflux.createStore({
   onShowChannel: function(channel: string) {
     if(!this.messages[channel]) this.messages[channel] = [];
     this._resetLoadingState();
+    // TODO: load older messages
+    console.log("SHOW")
+    this.hasLoaded = true;
+    this.loadMessages(channel, null, null, messagesBatchSize);
   },
   onLoadMoreMessages: function(channel: string) {
-    if(!this.loading && this.canLoadMore && this.hasLoaded) {
+    console.log("TRY LOAD", this.loading, this.canLoadMore, this.hasLoaded)
+    // if(!this.loading && this.canLoadMore && this.hasLoaded) {
+    if(!this.loading && this.canLoadMore) {
       logger.debug("load more messages from #" + channel);
       this.canLoadMore = false;
       this.loadMessages(channel, this.getOldestMessage(channel), null, messagesBatchSize);
@@ -103,7 +132,7 @@ const MessageStore = Reflux.createStore({
     if(!this.socket)
       return;
 
-    logger.debug("--> #" + channel + ".get " + olderThanHash + " " + newerThanHash  + " " + amount);
+    logger.debug("--> GET MESSAGES #" + channel + ", " + olderThanHash + " " + newerThanHash  + " " + amount);
     this.loading = true;
     UIActions.startLoading(channel, "loadmessages", "Loading messages...");
     this.socket.emit('channel.get', channel, olderThanHash, newerThanHash, amount, (c, messages) => {
@@ -133,10 +162,10 @@ const MessageStore = Reflux.createStore({
         this.messages[channel] = this.messages[channel].concat(unique);
 
       // Load message content
-      unique.reverse().forEach((f) => this._loadPost(channel, f));
+      unique.reverse().forEach((f) => this._loadPost(channel, f.payload));
 
       // Sort by timestamp
-      this.messages[channel] = _.sortBy(this.messages[channel], (e) => e.meta.ts);
+      this.messages[channel] = _.sortBy(this.messages[channel], (e) => e.payload.meta.ts);
 
       NotificationActions.newMessage(channel);
       this.trigger(channel, this.messages[channel]);

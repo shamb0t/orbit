@@ -44,9 +44,11 @@ class Channel extends React.Component {
       this.setState({
         channelChanged: true,
         displayNewMessagesIcon: false,
-        reachedChannelStart: false
+        reachedChannelStart: false,
+        messages: []
       });
       UIActions.focusOnSendMessage();
+      // ChannelActions.loadMoreMessages(nextProps.channel);
       this._getMessages(nextProps.channel);
     }
 
@@ -58,6 +60,18 @@ class Channel extends React.Component {
     });
   }
 
+  componentDidMount() {
+    this.unsubscribeFromMessageStore = MessageStore.listen(this.onNewMessages.bind(this));
+    this.stopListeningLoadingState = LoadingStateStore.listen(this._onLoadStateChange.bind(this));
+    this.stopListeningChannelState = ChannelActions.reachedChannelStart.listen(this._onReachedChannelStart.bind(this));
+    this.unsubscribeFromErrors = UIActions.raiseError.listen(this._onError.bind(this));
+
+    this.node = this.refs.MessagesView;
+    // ChannelActions.loadMoreMessages(this.state.channelName);
+    // this._getMessages(this.state.channelName);
+    // this.loadOlderMessages();
+  }
+
   _getMessages(channel) {
     const messages = MessageStore.getMessages(channel);
     this.setState({ messages: messages });
@@ -65,7 +79,7 @@ class Channel extends React.Component {
 
   _onLoadStateChange(state) {
     const loadingState = state[this.state.channelName];
-    console.log("STATE", state)
+    // console.log("LOAD STATE", loadingState)
     if(loadingState) {
       const loading = Object.keys(loadingState).filter((f) => loadingState[f] && loadingState[f].loading);
       const loadingText = loadingState[loading[0]] ? loadingState[loading[0]].message : null;
@@ -80,17 +94,6 @@ class Channel extends React.Component {
 
   _onReachedChannelStart() {
     this.setState({ reachedChannelStart: true });
-  }
-
-  componentDidMount() {
-    this.unsubscribeFromMessageStore = MessageStore.listen(this.onNewMessages.bind(this));
-    this.stopListeningLoadingState = LoadingStateStore.listen(this._onLoadStateChange.bind(this));
-    this.stopListeningChannelState = ChannelActions.reachedChannelStart.listen(this._onReachedChannelStart.bind(this));
-    this.unsubscribeFromErrors = UIActions.raiseError.listen(this._onError.bind(this));
-
-    this.node = this.refs.MessagesView;
-    // this._getMessages(this.state.channelName);
-    // this.loadOlderMessages();
   }
 
   componentWillUnmount() {
@@ -109,7 +112,7 @@ class Channel extends React.Component {
     this.node = this.refs.MessagesView;
     if(this.node.scrollHeight - this.node.scrollTop + this.bottomMargin > this.node.clientHeight
       && this.node.scrollHeight > this.node.clientHeight + 1
-      && this.state.messages.length > 0 && _.last(messages).meta.ts > _.last(this.state.messages).meta.ts
+      && this.state.messages.length > 0 && _.last(messages).payload.meta.ts > _.last(this.state.messages).payload.meta.ts
       && this.node.scrollHeight > 0) {
       this.setState({
         displayNewMessagesIcon: true,
@@ -235,7 +238,7 @@ class Channel extends React.Component {
 
     const messages = this.state.messages.map((e) => {
       return <Message
-                message={e}
+                message={e.payload}
                 key={e.hash}
                 onDragEnter={this.onDragEnter.bind(this)}
                 highlightWords={this.state.username}
@@ -244,11 +247,11 @@ class Channel extends React.Component {
               />;
     });
 
-    let channelStateText = this.state.loading && this.state.loadingText ? this.state.loadingText : `Loading more messages...`;
+    let channelStateText = this.state.loading && this.state.loadingText ? this.state.loadingText : `Loading messages...`;
     if(this.state.reachedChannelStart)
       channelStateText = `Beginning of # ${this.state.channelName}`;
 
-    messages.unshift(<div className="firstMessage" key="firstMessage">{channelStateText}</div>);
+    messages.unshift(<div className="firstMessage" key="firstMessage" onClick={this.loadOlderMessages.bind(this)}>{channelStateText}</div>);
 
     const fileDrop = this.state.dragEnter ? (
       <Dropzone

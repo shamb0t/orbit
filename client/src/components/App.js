@@ -79,12 +79,12 @@ var App = React.createClass({
 
     window.onblur = () => {
       AppActions.windowLostFocus();
-      logger.debug("Lost focus!");
+      // logger.debug("Lost focus!");
     };
 
     window.onfocus = () => {
       AppActions.windowOnFocus();
-      logger.debug("Got focus!");
+      // logger.debug("Got focus!");
     };
   },
   _handleAppStateChange: function(state) {
@@ -154,7 +154,7 @@ var App = React.createClass({
     this.setState({ joiningToChannel: channel, requirePassword: true} );
   },
   onJoinedChannel: function(channel) {
-    logger.debug("Join channel #" + channel, ChannelStore.channels);
+    logger.debug("Joined channel #" + channel, ChannelStore.channels);
     const channelInfo = ChannelStore.get(channel);
     this.showChannel(channelInfo.name);
   },
