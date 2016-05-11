@@ -60,7 +60,7 @@ class SendMessage extends React.Component {
   onKeyUp(event) {
       if(event.which === 9) {
           if (this.state.emojiSettings.emojiPickerActive){
-              this.printEmojiShortName();
+              this.displayEmojiText();
           }
       } else {
           if (this.state.emojiSettings.emojiPickerActive) {
@@ -96,7 +96,7 @@ class SendMessage extends React.Component {
       // Tab
       event.preventDefault();
       if (this.state.emojiSettings.emojiPickerActive) {
-          let len = this.state.emojiSettings.emojis.length;
+          const len = this.state.emojiSettings.emojis.length;
           const selectedIndex = (this.state.emojiSettings.emojiIndex + 1) % len;
           const emojiSettings = {
               ...this.state.emojiSettings,
@@ -127,7 +127,7 @@ class SendMessage extends React.Component {
       // Return or Space
       if (this.state.emojiSettings.emojiPickerActive) {
           event.preventDefault();
-          this.printEmojiShortName();
+          this.displayEmojiText();
           this.hideEmojiPicker();
       }
   } else if (event.which === 27) {
@@ -138,7 +138,7 @@ class SendMessage extends React.Component {
   }
     return;
   }
-  printEmojiShortName () {
+  displayEmojiText () {
       let filteredEmojis = filterEmojis(this.state.emojiSettings.emojiMatchString.slice(1), 50);
       const emojiIndex = this.state.emojiSettings.emojiIndex;
       const emojiShortName = filteredEmojis[emojiIndex];
