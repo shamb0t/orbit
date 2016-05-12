@@ -47,7 +47,8 @@ class SendMessage extends React.Component {
   }
   onKeyUp(event) {
       if (this.state.emojiPickerActive){
-          if (event.which === 9) {
+          if (event.which === 9 || event.which === 37 || event.which === 39) {
+              // Cycle through preview
               this.refs.emojipicker.onKeyUp(event);
           } else {
               const lastWord = this.refs.message.value.split(" ").pop();
