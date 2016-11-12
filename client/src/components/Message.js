@@ -23,13 +23,15 @@ class Message extends React.Component {
       isCommand: false,
       formattedTime: getFormattedTime(props.message.meta.ts),
       showSignature: false,
-      showProfile: null
+      showProfile: null,
+      showPin: false
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return this.state.post !== nextState.post
       || this.state.user !== nextState.user
+      || this.state.showPin !== nextState.showPin
   }
 
   componentDidMount() {
@@ -66,9 +68,25 @@ class Message extends React.Component {
     })
   }
 
+  mouseOver() {
+    this.setState({showPin: true})
+  }
+
+  mouseOut() {
+    this.setState({showPin: false})
+  }
+
+  onPinContent(event) {
+    const hash = this.props.message.value
+    if (hash) {
+      //actions.pinMessage(hash)
+      console.log("hola, ", hash)
+    }
+  }
+
   renderContent() {
     const { highlightWords, useEmojis } = this.props
-    const { isCommand, post } = this.state
+    const { isCommand, post, showPin } = this.state
     const contentClass = isCommand ? "Content command" : "Content"
     let content = (<div></div>)
     if (post) {
@@ -90,6 +108,7 @@ class Message extends React.Component {
           content = <Directory hash={post.hash} name={post.name} size={post.size} root={true} onPreviewOpened={this.props.onScrollToPreview}/>
           break
       }
+      content = <div><div>{content}</div><button className={showPin ? "pinButton" : "pinButton hidden"} onClick={this.onPinContent.bind(this)}>pin me</button></div>
     }
     return <div className={contentClass} onClick={this.onReplyTo.bind(this)}>{content}</div>
   }
@@ -100,7 +119,13 @@ class Message extends React.Component {
     const className = hasHighlights ? "Message highlighted" : "Message"
 
     return (
-      <div className={className} style={style} onDragEnter={onDragEnter}>
+      <div
+        className={className}
+        style={style}
+        onDragEnter={onDragEnter}
+        onMouseOver={this.mouseOver.bind(this)}
+        onMouseOut={this.mouseOut.bind(this)}>
+
         <span className="Timestamp">{formattedTime}</span>
         <User
           user={user}

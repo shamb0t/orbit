@@ -9,6 +9,7 @@ import AppStateStore from 'stores/AppStateStore';
 import NetworkActions from 'actions/NetworkActions';
 import BackgroundAnimation from 'components/BackgroundAnimation'; //eslint-disable-line
 import Spinner from 'components/Spinner';
+import Collections from 'components/Collections';
 import 'styles/ChannelsPanel.scss';
 import 'styles/RecentChannels.scss';
 
@@ -151,6 +152,8 @@ class ChannelsPanel extends React.Component {
                 <div className="RecentChannels">{openChannels}</div>
               </div>
             </TransitionGroup>
+
+            <Collections pinnedCollections={{ default: 'yo', default2: 'check it'}}/>
 
             <div className="bottomRow">
               <div className="icon flaticon-gear94" onClick={this.props.onOpenSettings} style={this.state.theme} key="settingsIcon"/>
