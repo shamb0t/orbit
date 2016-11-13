@@ -57,6 +57,7 @@ class ChannelsPanel extends React.Component {
     });
 
     this.setState({ openChannels: ChannelStore.channels });
+    this.setState({ pinnedMessage: ChannelStore.channels });
   }
 
   componentWillUnmount() {
@@ -153,8 +154,8 @@ class ChannelsPanel extends React.Component {
               </div>
             </TransitionGroup>
 
-            <Collections pinnedCollections={{ default: 'yo', default2: 'check it'}}/>
-
+            <Collections pinnedCollections={{default:'yo'}}/>
+            
             <div className="bottomRow">
               <div className="icon flaticon-gear94" onClick={this.props.onOpenSettings} style={this.state.theme} key="settingsIcon"/>
               <div className="icon flaticon-sharing7" onClick={this.props.onOpenSwarmView} style={this.state.theme} key="swarmIcon"/>

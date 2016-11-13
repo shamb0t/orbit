@@ -228,6 +228,13 @@ const MessageStore = Reflux.createStore({
       callback(null, this.posts[hash])
     }
   },
+  onPinMessage: function(hash) {
+    this.orbit.pin(hash)
+    .then((pin) => {
+      logger.debug("Pinned ", pin)
+    })
+    .catch((e) => console.error(e))
+  },
   onSendMessage: function(channel: string, text: string, replyToHash: string) {
     logger.debug("--> Send message: ", text, replyToHash)
     this.orbit.send(channel, text, replyToHash)

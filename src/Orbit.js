@@ -146,6 +146,11 @@ class Orbit {
       .then((feed) => this._postMessage(feed, Post.Types.Message, data, this._user._keys))
   }
 
+  pin(hash) {
+    logger.debug(`Pin hash #${hash}`)
+    return this._ipfs.pin.add(hash)
+  }
+
   get(channel, lessThanHash = null, greaterThanHash = null, amount = 1) {
     logger.debug(`Get messages from #${channel}: ${lessThanHash}, ${greaterThanHash}, ${amount}`)
 

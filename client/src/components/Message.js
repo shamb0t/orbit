@@ -79,7 +79,7 @@ class Message extends React.Component {
   onPinContent(event) {
     const hash = this.props.message.value
     if (hash) {
-      //actions.pinMessage(hash)
+      ChannelActions.pinMessage(hash)
       console.log("hola, ", hash)
     }
   }

@@ -6,7 +6,7 @@ import { render } from 'react-dom'
 import { Router, Route, hashHistory } from 'react-router'
 import Logger from 'logplease'
 
-import Orbit from 'orbit_'
+import Orbit from '../../../src/Orbit'
 
 import fs from 'fs'
 
