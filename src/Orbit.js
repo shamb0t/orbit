@@ -153,7 +153,8 @@ class Orbit {
 
   removePin(hash) {
     logger.debug(`Unpin hash #${hash}`)
-    return this._ipfs.pin.rm(hash).then(() => this._ipfs.pin.ls())
+    return this._ipfs.pin.rm(hash)
+    .then(() => this._ipfs.pin.ls())
   }
 
   get(channel, lessThanHash = null, greaterThanHash = null, amount = 1) {

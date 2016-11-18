@@ -41,7 +41,8 @@ class Message extends React.Component {
   componentDidMount() {
     ChannelActions.loadPost(this.props.message.value, (err, post) => {
       if (post) {
-        this.setState({ isPinned: this._isPinned(this.props.message.value) })
+        const pinned = this._isPinned(this.props.message.value)
+        this.setState({ isPinned: pinned, showPin:pinned })
         UserActions.getUser(post.meta.from, (err, user) => {
           this.setState({ post: post, user: user })
 
@@ -140,7 +141,13 @@ class Message extends React.Component {
           content = <Directory hash={post.hash} name={post.name} size={post.size} root={true} onPreviewOpened={this.props.onScrollToPreview}/>
           break
       }
-      content = <div><div>{content}</div><button className={(showPin || isPinned) ? "pinButton" : "pinButton hidden"} onClick={this.onPinClick.bind(this)}>pin me</button></div>
+      content = <div>
+                  <div>{content}</div>
+                  <button
+                    className={showPin ? "pinButton" : "pinButton hidden"}
+                    onClick={this.onPinClick.bind(this)}> {isPinned ? "pinned" : "pin" }
+                  </button>
+                </div>
     }
     return <div className={contentClass} onClick={this.onReplyTo.bind(this)}>{content}</div>
   }

@@ -3,7 +3,7 @@
 import React from 'react';
 import TransitionGroup from "react-addons-css-transition-group"; //eslint-disable-line
 import MessageStore from 'stores/MessageStore';
-// import 'styles/Collections.scss';
+import 'styles/RecentChannels.scss';
 import 'styles/ChannelsPanel.scss';
 const collectionsToArray = (collections) => {
   return Object.keys(collections).map((f) => collections[f]);
@@ -65,7 +65,7 @@ class Collections extends React.Component {
     return (
         <div className="Collections">
             <div className={collectionsHeaderClass}>Collections</div>
-              <div className="RecentCollections">
+              <div className="RecentChannelsView">
                 <div className="RecentChannels">{pinnedCollections}</div>
             </div>
         </div>
