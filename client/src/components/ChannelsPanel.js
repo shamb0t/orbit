@@ -5,6 +5,7 @@ import TransitionGroup from "react-addons-css-transition-group"; //eslint-disabl
 import UIActions from "actions/UIActions";
 import JoinChannel from 'components/JoinChannel'; //eslint-disable-line
 import ChannelStore from 'stores/ChannelStore';
+import CollectionStore from 'stores/CollectionStore';
 import AppStateStore from 'stores/AppStateStore';
 import NetworkActions from 'actions/NetworkActions';
 import BackgroundAnimation from 'components/BackgroundAnimation'; //eslint-disable-line
@@ -23,6 +24,7 @@ class ChannelsPanel extends React.Component {
     this.state = {
       currentChannel: props.currentChannel,
       openChannels: props.channels,
+      pinnedCollections:[],
       leftSide: props.left,
       joiningToChannel: props.joiningToChannel,
       username: props.username,
@@ -56,13 +58,18 @@ class ChannelsPanel extends React.Component {
       this.setState({ openChannels: channels });
     });
 
+    this.unsubscribeFromCollectionsStore = CollectionStore.listen((collections) => {
+      this.setState({ pinnedCollections: collections });
+    });
+
     this.setState({ openChannels: ChannelStore.channels });
-    this.setState({ pinnedMessage: ChannelStore.channels });
+    this.setState({ pinnedCollections: CollectionStore.collections });
   }
 
   componentWillUnmount() {
     this.stopListeningAppState();
     this.unsubscribeFromChannelStore();
+    this.unsubscribeFromCollectionsStore();
   }
 
   onClose() {
@@ -154,8 +161,8 @@ class ChannelsPanel extends React.Component {
               </div>
             </TransitionGroup>
 
-            <Collections pinnedCollections={{default:'yo'}}/>
-            
+            <Collections pinnedCollections={this.state.pinnedCollections}/>
+
             <div className="bottomRow">
               <div className="icon flaticon-gear94" onClick={this.props.onOpenSettings} style={this.state.theme} key="settingsIcon"/>
               <div className="icon flaticon-sharing7" onClick={this.props.onOpenSwarmView} style={this.state.theme} key="swarmIcon"/>

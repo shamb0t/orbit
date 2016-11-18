@@ -3,9 +3,8 @@
 import Reflux from 'reflux';
 
 var CollectionActions = Reflux.createActions([
-  "get",
-  "add",
-  "del"
+  "addPin",
+  "removePin"
 ]);
 
 export default CollectionActions;

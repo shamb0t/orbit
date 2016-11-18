@@ -6,10 +6,12 @@ import AppActions from 'actions/AppActions'
 import UIActions from 'actions/UIActions'
 import NetworkActions from 'actions/NetworkActions'
 import ChannelActions from 'actions/ChannelActions'
+import CollectionActions from 'actions/CollectionActions'
 import SocketActions from 'actions/SocketActions'
 import NotificationActions from 'actions/NotificationActions'
 import UserActions from 'actions/UserActions'
 import UserStore from 'stores/UserStore'
+import CollectionStore from 'stores/CollectionStore'
 import Logger from 'logplease'
 
 const logger = Logger.create('MessageStore', { color: Logger.Colors.Magenta })
@@ -17,7 +19,7 @@ const logger = Logger.create('MessageStore', { color: Logger.Colors.Magenta })
 const messagesBatchSize = 8
 
 const MessageStore = Reflux.createStore({
-  listenables: [AppActions, UIActions, NetworkActions, SocketActions, ChannelActions],
+  listenables: [AppActions, UIActions, NetworkActions, SocketActions, ChannelActions, CollectionActions],
   init: function() {
     this.currentChannel = null
     this.channels = {}
@@ -173,6 +175,7 @@ const MessageStore = Reflux.createStore({
     }
 
     this.onLoadPost(message.value, (err, post) => {
+
       UserActions.addUser(post.meta.from)
       if(post && post.content) {
         if(hasMentions(post.content.toLowerCase(), UserStore.user.name.toLowerCase()))
@@ -228,10 +231,19 @@ const MessageStore = Reflux.createStore({
       callback(null, this.posts[hash])
     }
   },
-  onPinMessage: function(hash) {
+  onAddPin: function(collectionName, hash) {
     this.orbit.pin(hash)
     .then((pin) => {
+      this.posts[hash].pinned = true
       logger.debug("Pinned ", pin)
+    })
+    .catch((e) => console.error(e))
+  },
+  onRemovePin: function(collectionName, hash){
+    this.orbit.removePin(hash)
+    .then((pin) => {
+      this.posts[hash].pinned = false
+      logger.debug("Pins:", pin)
     })
     .catch((e) => console.error(e))
   },

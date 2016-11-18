@@ -8,13 +8,13 @@ import Themes from 'app/Themes'
 const appName = 'anonet.app'
 
 const defaultCollections = {
-  'default' : []
+  default : []
 }
 
 const CollectionStore = Reflux.createStore({
   listenables: [CollectionActions],
   init: function() {
-    this.collections = []
+    this.collections = {}
     this.username = 'default'
     UserStore.listen((user) => {
       if(user) {
@@ -25,7 +25,7 @@ const CollectionStore = Reflux.createStore({
   },
   onInitialize: function(orbit) {
     this.orbit = orbit
-  }
+  },
   loadCollections: function() {
     // Load from local storage
     this.collections = Object.assign({}, defaultCollections)
@@ -37,21 +37,22 @@ const CollectionStore = Reflux.createStore({
   onGet: function(callback) {
     callback(this.collections)
   },
-  onAdd: function(collectionName, hash) {
+  onAddPin: function(collectionName, hash) {
     const collection = this.collections[collectionName] || []
     if (collection.indexOf(hash) < 0) {
-      this.collections[collectionName] = collection.concat(hash)
+      let collections = Object.assign({}, this.collections)
+      collections[collectionName] = collection.concat(hash)
+      Object.assign(this.collections, collections)
       this._save()
       this.trigger(this.collections)
     }
   },
-  onDel: function(collection, hash) {
-    const storeCollection = this.collections[collection]
-    const filtered = storeCollection.filter((e) => e !== hash)
-    this.collections[collection] = filtered
-    Object.assign(this.collections, collections)
-    this.collections[collection] = filtered
+  onRemovePin: function(collectionName, hash) {
+    const collection = this.collections[collectionName]
+    const filtered = collection.filter((e) => e !== hash)
+    Object.assign(this.collections, { [collectionName] : filtered })
     this._save()
+    this.trigger(this.collections)
   },
   _getCollectionsKey: function() {
     return `${appName}.${this.username}.collections`

@@ -41,20 +41,18 @@ class Collections extends React.Component {
   handleClickCollection(collectionName) {
   }
 
-  _renderCollection(e) {
-    const name = e
+  _renderCollection(name) {
     return (
       <div className="row link" key={Math.random()}>
         <span className='channelName' key={Math.random()}>#{name}</span>
       </div>
-    );
+    )
   }
 
   render() {
     const collectionsHeaderClass = Object.keys(this.state.pinnedCollections).length > 0 ? "panelHeader" : "hidden"
     const pinnedCollections = Object.keys(this.state.pinnedCollections)
-      .map((e) => this.state.pinnedCollections[e])
-      .map((collection) => this._renderCollection(collection));
+      .map((key) => this._renderCollection(key))
 
       const transitionProps = {
         component: 'div',
@@ -62,7 +60,7 @@ class Collections extends React.Component {
         transitionAppearTimeout: 5000,
         transitionEnterTimeout: 5000,
         transitionLeaveTimeout: 5000,
-      };
+      }
 
     return (
         <div className="Collections">
@@ -73,7 +71,6 @@ class Collections extends React.Component {
         </div>
     );
   }
-
 }
 
 export default Collections;
