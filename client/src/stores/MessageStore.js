@@ -46,6 +46,11 @@ const MessageStore = Reflux.createStore({
       this._addMessages(channel, [message], false)
     })
 
+    this.orbit.events.on('pin', (channel, message) => {
+      // logger.info("-->", channel, message)
+      this._pinMessages(channel, [message], false)
+    })
+
     this.orbit.events.on('joined', (channel) => {
       logger.info(`Joined #${channel}`)
       const feed = this.orbit.channels[channel].feed
@@ -190,6 +195,7 @@ const MessageStore = Reflux.createStore({
     if(!this.posts[hash]) {
       this.orbit.getPost(hash)
         .then((post) => {
+          post.pinned = this._isPinned(hash)
           this.posts[hash] = post
           const replyToHash = post.replyto
           if(replyToHash) {
@@ -230,6 +236,13 @@ const MessageStore = Reflux.createStore({
     } else {
       callback(null, this.posts[hash])
     }
+  },
+  _isPinned: function(hash) {
+    const collections = CollectionStore.collections
+    return Object.keys(collections)
+      .map((key) => collections[key])
+      .filter((e) => e.indexOf(hash) > -1)
+      .length > 0
   },
   onAddPin: function(collectionName, hash) {
     this.orbit.pin(hash)

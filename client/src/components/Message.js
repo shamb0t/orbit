@@ -10,8 +10,8 @@ import ChannelActions from 'actions/ChannelActions'
 import CollectionActions from 'actions/CollectionActions'
 import UserActions from 'actions/UserActions'
 import NotificationActions from 'actions/NotificationActions'
-import CollectionStore from 'stores/CollectionStore' //TODO remove store from here
 import TransitionGroup from "react-addons-css-transition-group"
+import MessageStore from 'stores/MessageStore'
 import { getFormattedTime } from '../utils/utils.js'
 import "styles/Message.scss"
 
@@ -26,8 +26,7 @@ class Message extends React.Component {
       formattedTime: getFormattedTime(props.message.meta.ts),
       showSignature: false,
       showProfile: null,
-      showPin: false,
-      isPinned: false
+      showPin: false
     }
   }
 
@@ -35,16 +34,13 @@ class Message extends React.Component {
     return this.state.post !== nextState.post
       || this.state.user !== nextState.user
       || this.state.showPin !== nextState.showPin
-      || this.state.isPinned !== nextState.isPinned
   }
 
   componentDidMount() {
     ChannelActions.loadPost(this.props.message.value, (err, post) => {
       if (post) {
-        const pinned = this._isPinned(this.props.message.value)
-        this.setState({ isPinned: pinned, showPin:pinned })
         UserActions.getUser(post.meta.from, (err, user) => {
-          this.setState({ post: post, user: user })
+          this.setState({ post: post, user: user , showPin:post.pinned})
 
           if (post.content) {
             if (post.content.startsWith('/me')) {
@@ -61,13 +57,6 @@ class Message extends React.Component {
         })
       }
     })
-  }
-  _isPinned(hash) {
-    const collections = CollectionStore.collections
-    return Object.keys(collections)
-      .map((key) => collections[key])
-      .filter((e) => e.indexOf(hash) > -1)
-      .length > 0
   }
 
   onReplyTo(event) {
@@ -86,16 +75,19 @@ class Message extends React.Component {
   }
 
   mouseOut() {
-    this.setState({showPin: this.state.isPinned})
+    this.setState({showPin: this.state.post.pinned})
   }
 
   onPinClick(event){
-    const { isPinned } = this.state
-    if (!isPinned) {
+    const { post } = this.state
+    if (!post.pinned) {
       this.pinContent()
     } else {
       this.unpinContent()
     }
+    const newPost = Object.assign({}, post,
+                    { pinned: !post.pinned})
+    this.setState({post:newPost}) //:c change this fugs
   }
 
   pinContent() {
@@ -104,7 +96,6 @@ class Message extends React.Component {
     if (hash) {
       CollectionActions.addPin("default", hash)
       console.log("hola, ", hash)
-      this.setState({ isPinned: true })
     }
   }
 
@@ -113,13 +104,12 @@ class Message extends React.Component {
     if (hash) {
       CollectionActions.removePin("default", hash)
       console.log("removed, ", hash)
-      this.setState({ isPinned: false })
     }
   }
 
   renderContent() {
     const { highlightWords, useEmojis } = this.props
-    const { isCommand, post, showPin, isPinned } = this.state
+    const { isCommand, post, showPin } = this.state
     const contentClass = isCommand ? "Content command" : "Content"
     let content = (<div></div>)
     if (post) {
@@ -145,7 +135,7 @@ class Message extends React.Component {
                   <div>{content}</div>
                   <button
                     className={showPin ? "pinButton" : "pinButton hidden"}
-                    onClick={this.onPinClick.bind(this)}> {isPinned ? "pinned" : "pin" }
+                    onClick={this.onPinClick.bind(this)}> { post.pinned ? "pinned" : "pin" }
                   </button>
                 </div>
     }
