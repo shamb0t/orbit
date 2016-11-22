@@ -14,15 +14,18 @@ const AppStateStore = Reflux.createStore({
       currentChannel: null,
       unreadMessages: {},
       mentions: {},
-      hasFocus: true
+      hasFocus: true,
+      params: null
     }
   },
-  onSetLocation: function(location) {
+  onSetLocation: function(location, params) {
     if(location === this.state.location)
       return
 
     this.state.currentChannel = null
     this.state.location = location
+    this.state.params = null
+    this.state.params = params
     this.trigger(this.state)
   },
   onSetCurrentChannel: function(channel) {

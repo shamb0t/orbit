@@ -1,50 +1,55 @@
 'use strict';
 
-import React from 'react';
-import TransitionGroup from "react-addons-css-transition-group"; //eslint-disable-line
-import MessageStore from 'stores/MessageStore';
-import 'styles/RecentChannels.scss';
-import 'styles/ChannelsPanel.scss';
+import React from 'react'
+import TransitionGroup from "react-addons-css-transition-group" //eslint-disable-line
+import MessageStore from 'stores/MessageStore'
+import CollectionStore from 'stores/CollectionStore'
+import UIActions from 'actions/UIActions'
+import 'styles/RecentChannels.scss'
+import 'styles/ChannelsPanel.scss'
+
 const collectionsToArray = (collections) => {
-  return Object.keys(collections).map((f) => collections[f]);
-};
+  return Object.keys(collections).map((f) => collections[f])
+}
 
 class Collections extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       pinnedCollections: props.pinnedCollections
-    };
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
       pinnedCollections: nextProps.pinnedCollections
-    });
+    })
   }
 
   componentDidMount() {
     this.unsubscribeFromMessageStore = MessageStore.listen((collections) => {
-      this.setState({ pinnedCollections: collections });
-    });
+      this.setState({ pinnedCollections: collections })
+    })
   }
 
   componentWillUnmount() {
-    this.unsubscribeFromMessageStore();
+    this.unsubscribeFromMessageStore()
   }
 
   onClose() {
     if(this.state.currentChannel !== null)
-      this.props.onClose();
+      this.props.onClose()
   }
 
   handleClickCollection(collectionName) {
+    this.props.onClick(collectionName)
+    // UIActions.openCollection(collectionName)
   }
 
   _renderCollection(name) {
     return (
       <div className="row link" key={Math.random()}>
-        <span className='channelName' key={Math.random()}>#{name}</span>
+        <span className='channelName' onClick={this.handleClickCollection.bind(this, name)} key={Math.random()}>#{name}</span>
       </div>
     )
   }
@@ -73,4 +78,4 @@ class Collections extends React.Component {
   }
 }
 
-export default Collections;
+export default Collections

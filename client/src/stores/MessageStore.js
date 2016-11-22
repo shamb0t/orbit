@@ -46,11 +46,6 @@ const MessageStore = Reflux.createStore({
       this._addMessages(channel, [message], false)
     })
 
-    this.orbit.events.on('pin', (channel, message) => {
-      // logger.info("-->", channel, message)
-      this._pinMessages(channel, [message], false)
-    })
-
     this.orbit.events.on('joined', (channel) => {
       logger.info(`Joined #${channel}`)
       const feed = this.orbit.channels[channel].feed

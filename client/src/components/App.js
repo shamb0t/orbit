@@ -32,6 +32,7 @@ import ChannelsPanel from 'components/ChannelsPanel'
 import ChannelView from 'components/ChannelView'
 import SettingsView from 'components/SettingsView'
 import SwarmView from 'components/SwarmView'
+import CollectionView from 'components/CollectionView'
 import LoginView from 'components/LoginView'
 import Header from 'components/Header'
 import Themes from 'app/Themes'
@@ -52,7 +53,8 @@ const views = {
   "Settings": "/settings",
   "Swarm": "/swarm",
   "Connect": "/connect",
-  "Channel": "/channel/"
+  "Channel": "/channel/",
+  "Collection" :"/collection/"
 }
 
 const hasIPFS = !!window.ipfsInstance
@@ -155,7 +157,7 @@ var App = React.createClass({
       this.goToLocation(state.currentChannel, views.Channel + encodeURIComponent(state.currentChannel))
     } else {
       document.title = prefix + ' Orbit'
-      this.goToLocation(state.location, views[state.location])
+      this.goToLocation(state.location, state.params ? views[state.location] + encodeURIComponent(state.params) : views[state.location])
     }
   },
   _reset: function() {
@@ -240,6 +242,10 @@ var App = React.createClass({
     else
       this._saveChannels(this.state.networkName, this.state.user.name, channels)
   },
+  openCollection: function(collectionName) {
+    this.closePanel()
+    AppActions.setLocation("Collection", collectionName)
+  },
   openSettings: function() {
     this.closePanel()
     AppActions.setLocation("Settings")
@@ -283,6 +289,7 @@ var App = React.createClass({
         onClose={this.closePanel}
         onOpenSwarmView={this.openSwarmView}
         onOpenSettings={this.openSettings}
+        onOpenCollection={this.openCollection}
         onDisconnect={this.disconnect}
         channels={ChannelStore.channels}
         currentChannel={AppStateStore.state.location}
@@ -311,6 +318,7 @@ render(
     <Route path="/" component={App}>
       <Route path="channel/:channel" component={ChannelView}/>
       <Route path="settings" component={SettingsView}/>
+      <Route path="collection/:collection" component={CollectionView}/>
       <Route path="swarm" component={SwarmView}/>
       <Route path="connect" component={LoginView}/>
     </Route>

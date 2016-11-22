@@ -43,8 +43,8 @@ class ChannelView extends React.Component {
   }
 
   renderProfile() {
-    return this.state.showProfile 
-      ? <Profile user={this.state.showProfile} /> 
+    return this.state.showProfile
+      ? <Profile user={this.state.showProfile} />
       : null
   }
 

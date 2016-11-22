@@ -161,7 +161,8 @@ class ChannelsPanel extends React.Component {
               </div>
             </TransitionGroup>
 
-            <Collections pinnedCollections={this.state.pinnedCollections}/>
+            <Collections pinnedCollections={this.state.pinnedCollections}
+              onClick={this.props.onOpenCollection}/>
 
             <div className="bottomRow">
               <div className="icon flaticon-gear94" onClick={this.props.onOpenSettings} style={this.state.theme} key="settingsIcon"/>

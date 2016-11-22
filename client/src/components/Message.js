@@ -26,7 +26,8 @@ class Message extends React.Component {
       formattedTime: getFormattedTime(props.message.meta.ts),
       showSignature: false,
       showProfile: null,
-      showPin: false
+      showPin: false,
+      isPinned: false
     }
   }
 
@@ -34,13 +35,15 @@ class Message extends React.Component {
     return this.state.post !== nextState.post
       || this.state.user !== nextState.user
       || this.state.showPin !== nextState.showPin
+      || this.state.isPinned !== nextState.isPinned
   }
 
   componentDidMount() {
     ChannelActions.loadPost(this.props.message.value, (err, post) => {
       if (post) {
         UserActions.getUser(post.meta.from, (err, user) => {
-          this.setState({ post: post, user: user , showPin:post.pinned})
+          const isPinned = post.pinned
+          this.setState({ post: post, user: user , showPin:isPinned, isPinned:isPinned})
 
           if (post.content) {
             if (post.content.startsWith('/me')) {
@@ -75,41 +78,36 @@ class Message extends React.Component {
   }
 
   mouseOut() {
-    this.setState({showPin: this.state.post.pinned})
+    this.setState({showPin: this.state.isPinned})
   }
 
   onPinClick(event){
-    const { post } = this.state
-    if (!post.pinned) {
+    if (!this.state.isPinned) {
       this.pinContent()
     } else {
       this.unpinContent()
     }
-    const newPost = Object.assign({}, post,
-                    { pinned: !post.pinned})
-    this.setState({post:newPost}) //:c change this fugs
   }
 
   pinContent() {
     const hash = this.props.message.value
-    console.log(this.props.message)
     if (hash) {
+      this.setState({ isPinned: true})
       CollectionActions.addPin("default", hash)
-      console.log("hola, ", hash)
     }
   }
 
   unpinContent() {
     const hash = this.props.message.value
     if (hash) {
+      this.setState({ isPinned: false})
       CollectionActions.removePin("default", hash)
-      console.log("removed, ", hash)
     }
   }
 
   renderContent() {
     const { highlightWords, useEmojis } = this.props
-    const { isCommand, post, showPin } = this.state
+    const { isCommand, post, showPin, isPinned } = this.state
     const contentClass = isCommand ? "Content command" : "Content"
     let content = (<div></div>)
     if (post) {
@@ -135,7 +133,7 @@ class Message extends React.Component {
                   <div>{content}</div>
                   <button
                     className={showPin ? "pinButton" : "pinButton hidden"}
-                    onClick={this.onPinClick.bind(this)}> { post.pinned ? "pinned" : "pin" }
+                    onClick={this.onPinClick.bind(this)}> { isPinned ? "pinned" : "pin" }
                   </button>
                 </div>
     }
