@@ -11,9 +11,6 @@ import 'styles/ChannelView.scss'
 class CollectionView extends React.Component {
   constructor(props) {
     super(props)
-    console.log(props.params)
-
-    console.log(props.params.collection)
     this.state = {
       collectionName: props.params.collection,
       pinnedContent: []
@@ -39,7 +36,7 @@ class CollectionView extends React.Component {
   }
   renderMessages() {
     return this.state.pinnedContent.map((message) => {
-      return <div>{message}</div>
+      return <div key={message}>{message}</div>
     })
   }
 
