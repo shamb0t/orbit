@@ -155,6 +155,7 @@ class ChannelsPanel extends React.Component {
             </TransitionGroup>
 
             <div className="bottomRow">
+              <div className="icon flaticon-loving40" onClick={this.props.onOpenCollections} style={this.state.theme} key="collectionsIcon"/>
               <div className="icon flaticon-gear94" onClick={this.props.onOpenSettings} style={this.state.theme} key="settingsIcon"/>
               <div className="icon flaticon-sharing7" onClick={this.props.onOpenSwarmView} style={this.state.theme} key="swarmIcon"/>
               <div className="icon flaticon-prohibition35" onClick={this.props.onDisconnect} style={this.state.theme} key="disconnectIcon"/>

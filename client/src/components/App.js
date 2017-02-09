@@ -27,6 +27,7 @@ import SettingsStore from 'stores/SettingsStore'
 import SwarmStore from 'stores/SwarmStore'
 
 import ChannelsPanel from 'components/ChannelsPanel'
+import Collections from 'components/Collections'
 import ChannelView from 'components/ChannelView'
 import SettingsView from 'components/SettingsView'
 import IpfsSettingsView from 'components/IpfsSettingsView'
@@ -55,6 +56,7 @@ const views = {
   "Connect": "/connect",
   "Channel": "/channel/",
   "Loading": "/loading",
+  "Collections" :"/collections/"
 }
 
 const ipcRenderer = window.ipcRenderer
@@ -200,6 +202,10 @@ var App = React.createClass({
     else
       this._saveChannels(this.state.networkName, this.state.user.name, channels)
   },
+  openCollections: function() {
+     this.closePanel()
+     AppActions.setLocation("Collections")
+  },
   openSettings: function() {
     this.closePanel()
     AppActions.setLocation("Settings")
@@ -247,6 +253,7 @@ var App = React.createClass({
         onClose={this.closePanel}
         onOpenSwarmView={this.openSwarmView}
         onOpenSettings={this.openSettings}
+        onOpenCollections={this.openCollections}
         onDisconnect={this.disconnect}
         channels={ChannelStore.channels}
         currentChannel={location}
@@ -274,6 +281,7 @@ render(
   <Router history={hashHistory}>
     <Route path="/" component={App}>
       <Route path="channel/:channel" component={ChannelView}/>
+      <Route path="collections" component={Collections}/>
       <Route path="settings" component={SettingsView}/>
       <Route path="ipfs-settings" component={IpfsSettingsView}/>
       <Route path="swarm" component={SwarmView}/>

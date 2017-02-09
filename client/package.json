@@ -29,6 +29,7 @@
     "react-addons-css-transition-group": "^0.14.1",
     "react-autolink": "^0.2.1",
     "react-dom": "0.14.8",
+    "react-drag-and-drop": "2.3.0",
     "react-dropzone": "^3.4.0",
     "react-emoji": "haadcode/react-emoji#a0a3c5dd069bfcd068fe3f51391917ec7facba13",
     "react-router": "^2.4.0",

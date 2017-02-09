@@ -6,6 +6,7 @@ import User from "components/User"
 import File from "components/File"
 import TextMessage from "components/TextMessage"
 import Directory from "components/Directory"
+import PinComponent from 'components/PinComponent'
 import ChannelActions from 'actions/ChannelActions'
 import UserActions from 'actions/UserActions'
 import NotificationActions from 'actions/NotificationActions'
@@ -23,13 +24,15 @@ class Message extends React.Component {
       isCommand: props.message.content && props.message.content.startsWith('/me'),
       formattedTime: getFormattedTime(props.message.meta.ts),
       showSignature: false,
-      showProfile: null
+      showProfile: null,
+      showPin: false
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return this.state.post !== nextState.post
       || this.state.user !== nextState.user
+      || this.state.showPin !== nextState.showPin
   }
 
   componentDidMount() {
@@ -93,7 +96,10 @@ class Message extends React.Component {
       }
     }
     // return <div className={contentClass} onClick={this.onReplyTo.bind(this)}>{content}</div>
-    return <div className={contentClass}>{content}</div>
+    return <div className={contentClass}>
+            {content}
+            <PinComponent showPin={this.state.showPin} message={this.props.message}/>
+          </div>
   }
 
   render() {
@@ -102,7 +108,12 @@ class Message extends React.Component {
     const className = hasHighlights ? "Message highlighted" : "Message"
 
     return (
-      <div className={className} style={style} onDragEnter={onDragEnter}>
+      <div className={className}
+        style={style}
+        onDragEnter={onDragEnter}
+        onMouseEnter={() => this.setState({ showPin:true })}
+        onMouseLeave={() => this.setState({ showPin:false })}>
+
         <span className="Timestamp">{formattedTime}</span>
         <User
           user={user}

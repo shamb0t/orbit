@@ -1,6 +1,6 @@
 'use strict'
 
-import Orbit from 'orbit_'
+import Orbit from '../../../../orbit-core'
 import Reflux from 'reflux'
 import AppActions from 'actions/AppActions'
 import IpfsDaemonStore from 'stores/IpfsDaemonStore'
