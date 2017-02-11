@@ -69,9 +69,17 @@ class Message extends React.Component {
   //   })
   // }
 
+  onMouseEnter() {
+    this.setState({showPin: true})
+  }
+
+  onMouseLeave() {
+    this.setState({showPin: false})
+  }
+
   renderContent() {
-    const { highlightWords, useEmojis } = this.props
-    const { isCommand, post } = this.state
+    const { highlightWords, useEmojis, onShowPinMenu, message} = this.props
+    const { isCommand, post, showPin } = this.state
     const contentClass = isCommand ? "Content command" : "Content"
     let content = (<div></div>)
     if (post) {
@@ -98,7 +106,7 @@ class Message extends React.Component {
     // return <div className={contentClass} onClick={this.onReplyTo.bind(this)}>{content}</div>
     return <div className={contentClass}>
             {content}
-            <PinComponent showPin={this.state.showPin} message={this.props.message}/>
+            <PinComponent showPin={showPin} hash={message.hash}/>
           </div>
   }
 

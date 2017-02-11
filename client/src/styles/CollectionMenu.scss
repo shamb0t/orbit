@@ -1,0 +1,11 @@
+.CollectionMenu {
+  overflow: auto;
+  z-index: 2;
+  position: relative;
+  margin-right: 1em;
+  height: 10em;
+
+  input {
+    background-color: #FFF;
+  }
+}

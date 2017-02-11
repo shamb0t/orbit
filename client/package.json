@@ -32,6 +32,7 @@
     "react-drag-and-drop": "2.3.0",
     "react-dropzone": "^3.4.0",
     "react-emoji": "haadcode/react-emoji#a0a3c5dd069bfcd068fe3f51391917ec7facba13",
+    "react-popup": "0.4.2",
     "react-router": "^2.4.0",
     "reflux": "^0.4.1",
     "stream-http": "^2.5.0"
